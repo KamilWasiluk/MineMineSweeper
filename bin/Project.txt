@@ -1,0 +1,35 @@
+MINESWEEPER CLONE
+
+should have all the functionalities of Microsoft MINESWEEPER
+
+window mode
+
+fixed number of fields
+fixed number of mines 
+fields adjacent to mine show number of mines they are neighboring to
+left click reveals field, right click flags the mine
+game ends when mine is left clicked
+game is won when all mines are flagged and the rest of gamefields are revealed
+
+
+three types of fields:
+    minefields
+    adjacent fields
+    free fields - not adjacent to any mines
+
+timer
+
+fields are generated after first click of the player
+game is easier when some free fields are generated around the firs click
+
+what should happen after first click of the player
+    game is generated
+        random (3 - X) number of free fields are generated around the click
+        mines are randomly alocated of the game - should be there some restrictions?
+        rest of the game (adjacent and rest of of free fields) is generated
+
+game field => underlying structure: array, double array?
+    array of fields
+    field as parent class or interface
+    different classes for mine, adjacent, and free fields
+        
