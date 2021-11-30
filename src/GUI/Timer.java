@@ -2,7 +2,6 @@ package GUI;
 
 public class Timer {
     private static long startTime;
-    private long nowTime = System.currentTimeMillis() -  startTime;
     private static int seconds;
     private static int minutes;
 
@@ -19,4 +18,6 @@ public class Timer {
     public static int getCurrentMinutes() {
         return minutes = (int) ((System.currentTimeMillis() - startTime) / 1000) / 60;
     }
+
+    
 }

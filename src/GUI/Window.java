@@ -2,7 +2,7 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
+//import java.awt.event.*;
 
 public class Window {
 
@@ -11,7 +11,6 @@ public class Window {
     private JButton[][] mineField = new JButton[8][8];
     public JLabel gameTimer;
     private JPanel timerPanel;
-    //private Timer timer = new Timer();
 
 
     public void makeWindow() {
@@ -19,7 +18,7 @@ public class Window {
         mainFrame = new JFrame();
         timerPanel = new JPanel();
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        String timerText = "0 : 0";//timer.getCurrentMinutes() + " : " + timer.getCurrentSeconds();
+        String timerText = "0 : 0";
         gameTimer = new JLabel(timerText);        
         timerPanel.add(gameTimer);
         for(int i = 0; i < 8; i++) {
