@@ -1,15 +1,22 @@
-package GUI;
+package Listeners;
 import java.awt.event.*;
-
+import javax.swing.*;
 import Fields.FieldGenerator;
+import GUI.ClickedButton;
+import GUI.Timer;
+import GUI.Window;
 
 public class StartGameListener implements ActionListener {
 
     private Window window;
+    private int x;
+    private int y;
     private static boolean onceClicked = false;
     
-    public StartGameListener(Window window) {
+    public StartGameListener(Window window, int x, int y) {
         this.window = window;
+        this.x = x;
+        this.y = y;
     }
     
     public void actionPerformed(ActionEvent a) {
@@ -19,7 +26,19 @@ public class StartGameListener implements ActionListener {
         Thread timerThread = new Thread(continuousTimer);
         timerThread.start();
         System.out.println("Timer initiated.");
-        new FieldGenerator().generateGameField(window);
+        JButton button = window.getButtons()[x][y];
+
+        for(JButton[] buttonRow : window.getButtons()) {
+            for(JButton everyOtherButton : buttonRow) {
+                if(everyOtherButton != button) {
+                    everyOtherButton.removeActionListener(this);
+                }                
+            }
+        }
+        
+        FieldGenerator f = new FieldGenerator(window);
+        f.generateGameField();
+        ClickedButton.click(button, f.getWhatsUnder(x, y));
         onceClicked = true;
 
     }

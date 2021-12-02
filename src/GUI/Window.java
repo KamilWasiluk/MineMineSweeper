@@ -26,7 +26,7 @@ public class Window {
         
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
-                mineField[i][j] = new JButton(" ");
+                mineField[i][j] = new JButton("   ");
                 /*
                 c.fill = GridBagConstraints.BOTH;
                 c.gridx = i;
@@ -40,7 +40,7 @@ public class Window {
 
         mainFrame.getContentPane().add(BorderLayout.CENTER, minefieldPanel);
         mainFrame.getContentPane().add(BorderLayout.NORTH, timerPanel);
-        mainFrame.setSize(350,350);
+        mainFrame.setSize(440,360);
         mainFrame.setVisible(true);
     }
 
@@ -54,6 +54,12 @@ public class Window {
     }
 
     public void refreshMineField(){
+        minefieldPanel.removeAll();
+        for(int i = 0; i < 8; i++) {
+            for(int j = 0; j < 8; j++) {
+                minefieldPanel.add(mineField[i][j]);
+            }
+        }
         minefieldPanel.repaint();
     }
 

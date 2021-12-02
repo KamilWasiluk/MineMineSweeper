@@ -2,11 +2,26 @@ package GUI;
 
 import javax.swing.*;
 
-public class ClickedButton extends JButton {
+import Fields.WhatsUnder;
 
-    public ClickedButton() {
-        JPanel revealedPanel = new JPanel();
-        JLabel revealedLabel = new JLabel("M");
-        revealedPanel.add(revealedLabel); 
+public class ClickedButton {
+    private WhatsUnder under;
+    private JButton button;
+    
+    public static void click(JButton button, WhatsUnder under) {
+        //this.under = under;
+        //this.button = button;
+        button.setEnabled(false);
+
+        switch(under) {
+            case MINE: button.setText("M");
+                break;
+            case EMPTY: button.setText("   ");
+                break;
+            case ADJACENT: button.setText("   ");
+                break;       
+            default:
+                break;     
+        }
     }
 }
