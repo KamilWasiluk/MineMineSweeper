@@ -16,7 +16,8 @@ public class GUITest {
        
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
-                mineField[i][j].addActionListener(new StartTimerListener(window));
+                mineField[i][j].addActionListener(new StartGameListener(window));
+                
             }
         }
        
