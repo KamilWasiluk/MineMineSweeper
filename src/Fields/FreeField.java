@@ -22,6 +22,10 @@ public class FreeField implements Field {
         button.addActionListener(new ConsequenceListener());
     }
 
+    public WhatsUnder getWhatsUnder() {
+        return whatsUnder;
+    }
+
     class ConsequenceListener implements ActionListener {
         public void actionPerformed (ActionEvent a){
             //JButton[][] mineField = window.getButtons();

@@ -1,8 +1,8 @@
 package GUI;
 
 import javax.swing.*;
+import Fields.WhatsUnder;
 import java.awt.*;
-//import java.awt.event.*;
 
 public class Window {
 
@@ -11,7 +11,7 @@ public class Window {
     private JButton[][] mineField = new JButton[8][8];
     private JLabel gameTimer;
     private JPanel timerPanel;
-
+    private WhatsUnder[][] mineTable;
 
     public void makeWindow() {
 
@@ -19,21 +19,13 @@ public class Window {
         mainFrame = new JFrame();
         timerPanel = new JPanel();
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        String timerText = "0 : 0";
+        String timerText = "00 : 00";
         gameTimer = new JLabel(timerText);
         timerPanel.add(gameTimer);
-        //GridBagConstraints c = new GridBagConstraints();
         
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 mineField[i][j] = new JButton("   ");
-                /*
-                c.fill = GridBagConstraints.BOTH;
-                c.gridx = i;
-                c.gridy = j;
-                c.gridwidth = 1;
-                c.gridheight =1;
-                */
                 minefieldPanel.add(mineField[i][j]);
             }
         }
@@ -42,6 +34,9 @@ public class Window {
         mainFrame.getContentPane().add(BorderLayout.NORTH, timerPanel);
         mainFrame.setSize(440,360);
         mainFrame.setVisible(true);
+        
+        mineTable = new WhatsUnder[8][8];
+
     }
 
     public JButton[][] getButtons() {
@@ -49,7 +44,16 @@ public class Window {
     }
 
     public void refreshTimer() {
-        gameTimer.setText(Timer.getCurrentMinutes() + " : " + Timer.getCurrentSeconds());
+        if(Timer.getCurrentSeconds() < 10 && Timer.getCurrentMinutes() < 10) {
+            gameTimer.setText("0" + Timer.getCurrentMinutes() + " : " + "0" + Timer.getCurrentSeconds());
+        }else if (Timer.getCurrentSeconds() < 10 && Timer.getCurrentMinutes() >= 10) {
+            gameTimer.setText(Timer.getCurrentMinutes() + " : " + "0" + Timer.getCurrentSeconds());
+        }else if (Timer.getCurrentSeconds() >= 10 && Timer.getCurrentMinutes() < 10) {
+            gameTimer.setText("0" + Timer.getCurrentMinutes() + " : " + Timer.getCurrentSeconds());
+        }else {
+            gameTimer.setText(Timer.getCurrentMinutes() + " : " + Timer.getCurrentSeconds());
+        }
+
         gameTimer.repaint();
     }
 
@@ -63,5 +67,11 @@ public class Window {
         minefieldPanel.repaint();
     }
 
-    
+    public WhatsUnder[][] getMineTable() {
+        return mineTable;
+    }
+
+    public void insertMineTable(WhatsUnder u,  int x, int y) {
+        mineTable[x][y] = u;
+    }
 }

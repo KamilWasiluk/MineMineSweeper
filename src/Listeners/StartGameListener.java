@@ -1,7 +1,10 @@
 package Listeners;
 import java.awt.event.*;
 import javax.swing.*;
+
+import Fields.AdjacentField;
 import Fields.FieldGenerator;
+import Fields.WhatsUnder;
 import GUI.ClickedButton;
 import GUI.Timer;
 import GUI.Window;
@@ -38,7 +41,14 @@ public class StartGameListener implements ActionListener {
         
         FieldGenerator f = new FieldGenerator(window);
         f.generateGameField();
-        ClickedButton.click(button, f.getWhatsUnder(x, y));
+        if (window.getMineTable()[x][y] == WhatsUnder.ADJACENT) {
+            AdjacentField af = new AdjacentField(x, y, window);
+            AdjacentField.ConsequenceListener CLsnr = af.new ConsequenceListener();
+            int i = CLsnr.assumeMines();
+            ClickedButton.click(button, i); 
+        }else {
+            ClickedButton.click(button, window.getMineTable()[x][y]);
+        }
         onceClicked = true;
 
     }

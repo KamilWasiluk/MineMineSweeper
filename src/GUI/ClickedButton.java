@@ -18,10 +18,16 @@ public class ClickedButton {
                 break;
             case EMPTY: button.setText("   ");
                 break;
-            case ADJACENT: button.setText("   ");
-                break;       
+            //case ADJACENT: button.setText("A");
+            //    break;       
             default:
                 break;     
         }
+    }
+
+    public static void click(JButton button, int howMany) {
+        button.setEnabled(false);
+        String t = " "+howMany;
+        button.setText(t);
     }
 }

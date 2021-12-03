@@ -21,6 +21,10 @@ public class MineField implements Field {
         JButton button = mineField[x][y];
         button.addActionListener(new ConsequenceListener());
     }
+ 
+    public WhatsUnder geWhatsUnder() {
+        return whatsUnder;
+    }
 
     class ConsequenceListener implements ActionListener {
         public void actionPerformed (ActionEvent a){

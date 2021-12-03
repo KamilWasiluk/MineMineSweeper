@@ -3,7 +3,6 @@ package Tests;
 import GUI.*;
 //import java.awt.event.*;
 import Listeners.StartGameListener;
-
 import javax.swing.JButton;
 
 public class GUITest {
