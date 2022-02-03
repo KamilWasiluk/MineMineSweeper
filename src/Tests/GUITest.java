@@ -2,7 +2,7 @@ package Tests;
 
 import GUI.*;
 //import java.awt.event.*;
-import Listeners.StartGameListener;
+//import Listeners.StartGameListener;
 import javax.swing.JButton;
 
 public class GUITest {
@@ -12,6 +12,7 @@ public class GUITest {
         GUITest test = new GUITest();
         Window window = new Window();
         window.makeWindow();
+        /*
         JButton[][] mineField = window.getButtons();
        
         for(int i = 0; i < 8; i++) {
@@ -20,7 +21,7 @@ public class GUITest {
                 
             }
         }
-       
+       */
         //mineField[0][0].addActionListener(new StartTimerListener(window));
     }
 

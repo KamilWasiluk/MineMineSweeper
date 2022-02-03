@@ -1,21 +1,21 @@
 package GUI;
 
 import javax.swing.*;
-import Fields.WhatsUnder;
+import Fields.FieldType;
 import java.awt.*;
 
 public class Window {
 
     private JPanel minefieldPanel;
     private JFrame mainFrame;
-    private JButton[][] mineField = new JButton[8][8];
+    private GameButton[][] mineField = new GameButton[8][8];
     private JLabel gameTimer;
     private JPanel timerPanel;
-    private WhatsUnder[][] mineTable;
+    private FieldType[][] mineTable;
 
     public void makeWindow() {
 
-        minefieldPanel = new JPanel();
+        minefieldPanel = new JPanel(new GridLayout(8,8));
         mainFrame = new JFrame();
         timerPanel = new JPanel();
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -25,8 +25,14 @@ public class Window {
         
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
-                mineField[i][j] = new JButton("   ");
+                mineField[i][j] = new GameButton(i, j);
+                
+                //mineField[i][j].setXY(i, j);
+                //mineField[i][j].addAction();
+                //mineField[i][j].setText(i + " " + j);
+               
                 minefieldPanel.add(mineField[i][j]);
+                //System.out.println("New button added" + " " + i + " " + j);
             }
         }
 
@@ -35,12 +41,13 @@ public class Window {
         mainFrame.setSize(440,360);
         mainFrame.setVisible(true);
         
-        mineTable = new WhatsUnder[8][8];
+        mineTable = new FieldType[8][8];
 
+        System.out.println("Window built succeeded.");
     }
 
-    public JButton[][] getButtons() {
-        return mineField;
+    public GameButton getButton(int x, int y) {
+        return (GameButton) mineField[x][y];
     }
 
     public void refreshTimer() {
@@ -67,11 +74,11 @@ public class Window {
         minefieldPanel.repaint();
     }
 
-    public WhatsUnder[][] getMineTable() {
+    public FieldType[][] getMineTable() {
         return mineTable;
     }
 
-    public void insertMineTable(WhatsUnder u,  int x, int y) {
+    public void insertMineTable(FieldType u,  int x, int y) {
         mineTable[x][y] = u;
     }
 }

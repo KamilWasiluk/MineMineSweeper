@@ -1,5 +1,5 @@
 package Fields;
 
-public enum WhatsUnder {
+public enum FieldType {
     MINE, ADJACENT, EMPTY;    
 }
