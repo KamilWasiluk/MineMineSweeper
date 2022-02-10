@@ -1,33 +1,36 @@
 package GUI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import Fields.FieldType;
 import java.awt.event.*;
 
 public class MineTable {
 
-    private GameButton[][] mineField = new GameButton[8][8];
+    private GameButton[][] mineField = new GameButton[8][8]; 
     private Window window;
     private int minesQuantity = 10;
-    private int[][] mines = {{0,0}, {1,1}, {2,7}, {3,0}, {4,5}, {5,5}, {2,4}, {7,7}, {7,6}, {5,7}};
-    private int xSize;
-    private int ySize;
+    private ArrayList<int[]> mineCoordinates = new ArrayList<int[]>();
+    private int mineFieldWith;
+    private int mineFieldHeight;
+    private boolean isGameInitiatedChecker = false;     //Checks condition for the listener starting the game to be activated or removed
 
     public void setSize(Window window) {
-        xSize = 8;
-        ySize = 8;
+        mineFieldWith = 8;
+        mineFieldHeight = 8;
         this.window = window;
     }
 
     public MineTable (int x, int y, Window window) {
-        this.xSize = x;
-        this.ySize = y;
+        this.mineFieldWith = x;
+        this.mineFieldHeight = y;
         this.window = window;
 
-        for(int i = 0; i < xSize; i++) {
-            for(int j = 0; j < ySize; j++) {
+        //imports the 2d array of gamebuttons from Window class
+        for(int i = 0; i < mineFieldWith; i++) {
+            for(int j = 0; j < mineFieldHeight; j++) {
                 mineField[i][j] = window.getButton(i, j);
-                //System.out.println("button added: " + i + j);
+                mineField[i][j].setMineTable(this);
                 mineField[i][j].addActionListener(new StartGameListener(i, j));
             }
         }
@@ -47,26 +50,41 @@ public class MineTable {
     private void generateMineFields(ArrayList<int[]> list) {
         
         int minesToPut = minesQuantity;
-        while(minesToPut !=0)  {
-            int a = (int) (Math.random() * 7 + 1);
-            int b = (int) (Math.random() * 7 + 1);
+        boolean collidingCoordinates = false;
+        while(minesToPut > 0)  {
+            int a = (int) (Math.random() * 8);
+            int b = (int) (Math.random() * 8);
             int[] coordinates = {a, b};
-            if(!list.contains(coordinates)) {
+            
+            //check if mine coordinates don't belong to area revealed on the firs click
+            for(int[] excludedCoor : list){
+                if(Arrays.equals(excludedCoor, coordinates)) {
+                collidingCoordinates = true;  
+                break;
+                } else{ 
+                    collidingCoordinates = false;
+                }
+            }
+
+            //check if mine coordinates aren't repeating
+            for(int[] exludedCoor : mineCoordinates) {
+                if(Arrays.equals(exludedCoor, coordinates)) {
+                    collidingCoordinates = true;
+                    break;
+                }
+            }
+
+            if(collidingCoordinates == false) {
                 mineField[a][b].setType(FieldType.MINE);
+                mineCoordinates.add(coordinates);
+
                 minesToPut --;
             }
         }
-        /*
-        for(int i = 0; i < 8; i++) {
-            int a = mines[i][0];
-            int b = mines[i][1];
-            mineField[a][b].setType(FieldType.MINE);
-            System.out.println("Mines added to the gamefield: " + i);
-        }
-        */
     }
 
     private void generateAdjacentfields() {
+
         ArrayList<int[]> adjacent = this.getAdjacents();
         
         for(int i = 0; i < adjacent.size(); i ++) {
@@ -76,19 +94,17 @@ public class MineTable {
             
             if(mineField[x][y].getType() != FieldType.MINE){
                 mineField[x][y].setType(FieldType.ADJACENT);
-                int mineQuantity = assumeMines(mineField[x][y]);
-                mineField[x][y].setNumberOfMinesNeighbouring(mineQuantity);
-                //System.out.println("Adjacent field added: " + x + " " + y);
+                int neighbouringMinesQuantity = assumeMines(mineField[x][y]);
+                mineField[x][y].setNumberOfMinesNeighbouring(neighbouringMinesQuantity);
             }
         }
     }
 
     private void generateEmptyFields() {
-        for(int i = 0; i < 8; i++) {
-            for(int j = 0; j < 8; j++) {
-                if(mineField[i][j].getType() == null) {
+        for(int i = 0; i < mineFieldWith; i++) {
+            for(int j = 0; j < mineFieldHeight; j++) {
+                if(mineField[i][j].getType() != FieldType.MINE && mineField[i][j].getType() != FieldType.ADJACENT) {
                     mineField[i][j].setType(FieldType.EMPTY);
-                    //System.out.println("Emty field added: " + i + " " + j);
                 }
             }
         }
@@ -98,16 +114,15 @@ public class MineTable {
     
         ArrayList<int[]> adjacent = new ArrayList<>();
         
-        for(int i = 0; i < 8; i++) {
-            int a = mines[i][0];
-            int b = mines[i][1];
+        for(int i = 0; i < mineCoordinates.size(); i++) {
+            int[] mine = mineCoordinates.get(i);
+            int a = mine[0];
+            int b = mine[1];
 
             for(int x = -1; x < 2; x++){
                 for(int y = -1; y < 2; y++){
                     int[] xy = {a + x, b + y};
                     adjacent.add(xy);
-
-                    //System.out.println("Adding new coordinates: " + xy[0] + " " + xy[1]);
                 }
             }
         }
@@ -132,100 +147,75 @@ public class MineTable {
         for(int[] crn : neighbouringMines) {
             int a = crn[0];
             int b = crn[1];
-            //System.out.println("mineQuantity cheched: " + x + " " + y);
 
             if(mineField[a][b].getType() == FieldType.MINE) {
                 mineQuantity ++;
-
-                //System.out.println("MineQuantity increased");
-
             }
         }
         return mineQuantity;
     }
 
+    //This listener initiates the game after first left click on any button. Generates mines' coordinates, starts timer and erases itself after.
     public class StartGameListener implements ActionListener {
 
-        private boolean onceClicked;
         private int x;
         private int y;
 
         private StartGameListener(int x, int y) {
             this.x = x;
-            this. y = y;
-            this.onceClicked = false;
+            this.y = y;
         }
         
         public void actionPerformed(ActionEvent a) {
-            if (onceClicked == true) return;
-            
+            if (isGameInitiatedChecker == true) return;
+            isGameInitiatedChecker = true;
+
             //Starts the clock
             Runnable continuousTimer = new Refresher();
             Thread timerThread = new Thread(continuousTimer);
             timerThread.start();
             System.out.println("Timer initiated.");
-            //
-
+            
+            //imports GameButton object clicked by player, adds GB class listeners to the object and activates left-click action for that button
             GameButton button = mineField[x][y];
             button.setType(FieldType.EMPTY);
+            System.out.println("Button clicked " + x + " " + y);
+            //button.addButtonListeners();
+            GameButton.ClickListener click = button.new ClickListener();
+            //click.actionPerformed(a);
 
-            //Removes this listener from rest of the buttons as the game is already initiated
+            //Removes this listener from rest of the buttons as the game is already initiated, add listeners defined in GameButton class
+            int i = 1;
             for(GameButton[] buttonRow : mineField) {
                 for(GameButton everyOtherButton : buttonRow) {
-                    onceClicked = true;
                     if(everyOtherButton != button) {
                         everyOtherButton.removeActionListener(this);
+                        everyOtherButton.addButtonListeners();
                     }   
                 }
             }
-            //onceClicked = true;
-
-                       /*
-            int[][] initiallyRevealedCoordinates;
-            int aboveRevealedArea = (int) (Math.random() * 3 + 1);
-            int belowRevealedArea = (int) (Math.random() * 3 + 1);
-            int leftRevealedArea = (int) (Math.random() * 3 + 1);
-            int rightRevealedArea = (int) (Math.random() * 3 + 1);
-            int howToFill = (int) Math.random();
-            int initX = 0;
-            int initY = 0;
-            switch(howToFill) {
-                case 0:
-                    for(int i = x - belowRevealedArea; i <= x + aboveRevealedArea; i++) {
-                        int lj = (int) (Math.random() * leftRevealedArea);
-                        int rj = (int) (Math.random() * rightRevealedArea);
-
-                        for(int j = y - lj; j <= y + rj; j++) {
-                            initiallyRevealedCoordinates[initX][initY] = j;
-                        }
-                    }
-            }
-
-            horizontal {3, 7}
-            vertical {2, 3}
-            coordinates {[3,2], [4,2], [5,2], [6,2], [7,2], [3,3], [4, 3]... [7,3]}
-            
-
-            */
 
             generateNewGame( setInitiallyRevealedField());
-
+            click.actionPerformed(a);
         }
 
+        //generates random area revealed with the first click
         private ArrayList<int[]> setInitiallyRevealedField() {
             ArrayList<int[]> list = new ArrayList<>();
             int[] horizontal = {x - (int) (Math.random() *2 + 1), x + (int) (Math.random() *2 + 1)}; 
             int[] vertical = {y - (int) (Math.random() *2 + 1), y + (int) (Math.random() *2 + 1)}; 
-            //int[][] coordinates = new int[horizontal[1] - horizontal[0] + 1][vertical[1] - vertical[0]];
+            
             for(int i = horizontal[0]; i <= horizontal[1]; i++) {
                 for(int j = vertical[0]; j <= vertical[1]; j++) {
                     list.add(new int[]{i,j});
+                    System.out.println("initially revealed fields added: " + i + " " + j); 
                 }
             }
             return list;
         }
     }
 
+    //Timer thread class
     class Refresher implements Runnable {
 
         public void run() {

@@ -26,13 +26,7 @@ public class Window {
         for(int i = 0; i < 8; i++) {
             for(int j = 0; j < 8; j++) {
                 mineField[i][j] = new GameButton(i, j);
-                
-                //mineField[i][j].setXY(i, j);
-                //mineField[i][j].addAction();
-                //mineField[i][j].setText(i + " " + j);
-               
                 minefieldPanel.add(mineField[i][j]);
-                //System.out.println("New button added" + " " + i + " " + j);
             }
         }
 
@@ -40,10 +34,7 @@ public class Window {
         mainFrame.getContentPane().add(BorderLayout.NORTH, timerPanel);
         mainFrame.setSize(440,360);
         mainFrame.setVisible(true);
-        
         mineTable = new FieldType[8][8];
-
-        System.out.println("Window built succeeded.");
     }
 
     public GameButton getButton(int x, int y) {
