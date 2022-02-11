@@ -83,7 +83,7 @@ public class GameButton extends JButton {
 
         for(int i = rowIndex - 1; i <= rowIndex + 1; i++){
             for(int j = columnIndex -1; j <= columnIndex + 1; j++){
-                if(i < 0 || j < 0 || i > 7 || j > 7){}else{ 
+                if(i < 0 || j < 0 || i > mineTable.getWith() - 1 || j > mineTable.getHeight() - 1){}else{ 
                     GameButton button = mineTable.getButton(i, j);
                     
                     if(button.isEnabled == true &&  (button.getType() == FieldType.ADJACENT || button.getType() == FieldType.EMPTY)) {
@@ -121,12 +121,14 @@ public class GameButton extends JButton {
             case MINE_SET:
                 break;
             }
+
+            mineTable.checkIfWon();
         }
         
         private void mineAction() {
             setText("M");
             setBackground(new ColorUIResource(51, 51, 153));
-            //end the game
+            mineTable.endGame(false);
         }
  
         private void adjacentAction() {
@@ -159,14 +161,21 @@ public class GameButton extends JButton {
         @Override
         public void mouseReleased(java.awt.event.MouseEvent e) {
 
+            if(!isEnabled){
+                return;
+            }
+            
             if (pressed && type != FieldType.MINE_SET) {
                 if(SwingUtilities.isRightMouseButton(e)) {
                     setFlag();
+                    mineTable.minesQuantityHasChanged(true);
                     pressed = false;
                     
                 } 
             } else if(pressed && type == FieldType.MINE_SET) {
                 removeFlag();
+                mineTable.minesQuantityHasChanged(false);
+
                 pressed = false;
             }
         }

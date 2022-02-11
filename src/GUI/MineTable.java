@@ -7,24 +7,29 @@ import java.awt.event.*;
 
 public class MineTable {
 
-    private GameButton[][] mineField = new GameButton[8][8]; 
-    private Window window;
-    private int minesQuantity = 10;
+        private Window window;
+    private int minesQuantity;
     private ArrayList<int[]> mineCoordinates = new ArrayList<int[]>();
     private int mineFieldWith;
     private int mineFieldHeight;
-    private boolean isGameInitiatedChecker = false;     //Checks condition for the listener starting the game to be activated or removed
+    private GameButton[][] mineField; // = new GameButton[mineFieldWith][mineFieldHeight]; 
 
+    private boolean isGameInitiatedChecker = false;     //Checks condition for the listener starting the game to be activated or removed
+    private boolean gameEnded = false;
+/*
     public void setSize(Window window) {
         mineFieldWith = 8;
         mineFieldHeight = 8;
         this.window = window;
-    }
+    }*/
 
-    public MineTable (int x, int y, Window window) {
-        this.mineFieldWith = x;
-        this.mineFieldHeight = y;
+    public MineTable (int[] difficulty, Window window) {
+        this.mineFieldWith = difficulty[0];
+        this.mineFieldHeight = difficulty[1];
+        this. minesQuantity = difficulty[2];
         this.window = window;
+        this.mineField = new GameButton[mineFieldWith][mineFieldHeight]; 
+
 
         //imports the 2d array of gamebuttons from Window class
         for(int i = 0; i < mineFieldWith; i++) {
@@ -40,11 +45,35 @@ public class MineTable {
         return mineField[x][y];
     }
 
+    public int getWith(){
+        return mineFieldWith;
+    }
+
+    public int getHeight() {
+        return mineFieldHeight;
+    }
+
+    public boolean getGameEnded() {
+        return gameEnded;
+    }
+
+    public void minesQuantityHasChanged(boolean a) {
+            window.changeMineQuantity(a);
+    }
+
     public void generateNewGame(ArrayList<int[]> list) {
         
         generateMineFields(list);
         generateAdjacentfields();
         generateEmptyFields();
+    }
+
+    public void endGame(boolean win) {
+        if(win) {
+            window.congratulates();
+        }else {
+            window.gameOver();
+        }
     }
         
     private void generateMineFields(ArrayList<int[]> list) {
@@ -52,8 +81,8 @@ public class MineTable {
         int minesToPut = minesQuantity;
         boolean collidingCoordinates = false;
         while(minesToPut > 0)  {
-            int a = (int) (Math.random() * 8);
-            int b = (int) (Math.random() * 8);
+            int a = (int) (Math.random() * mineFieldWith);
+            int b = (int) (Math.random() * mineFieldHeight);
             int[] coordinates = {a, b};
             
             //check if mine coordinates don't belong to area revealed on the firs click
@@ -126,7 +155,7 @@ public class MineTable {
                 }
             }
         }
-        adjacent.removeIf(i -> i[0] < 0 || i[1] < 0 || i[0] > 7 || i[1] > 7);
+        adjacent.removeIf(i -> i[0] < 0 || i[1] < 0 || i[0] > mineFieldWith - 1 || i[1] > mineFieldHeight - 1);
         return adjacent;
     }
 
@@ -142,7 +171,7 @@ public class MineTable {
                 neighbouringMines.add(xy);
             }
         }
-        neighbouringMines.removeIf(i -> i[0] < 0 || i[1] < 0 || i[0] > 7 || i[1] > 7);
+        neighbouringMines.removeIf(i -> i[0] < 0 || i[1] < 0 || i[0] > mineFieldWith - 1 || i[1] > mineFieldHeight - 1);
         
         for(int[] crn : neighbouringMines) {
             int a = crn[0];
@@ -155,13 +184,30 @@ public class MineTable {
         return mineQuantity;
     }
 
+    public void checkIfWon() {
+
+        for(int[] i : mineCoordinates) {
+            if(mineField[i[0]][i[1]].getType() == FieldType.MINE) {
+            return;
+            }
+        }
+        for(GameButton[] buttonRow : mineField) {
+            for(GameButton button : buttonRow) {
+                if(button.isEnabled()){
+                    return;
+                }
+            }
+        }
+        endGame(true);
+    }
+
     //This listener initiates the game after first left click on any button. Generates mines' coordinates, starts timer and erases itself after.
-    public class StartGameListener implements ActionListener {
+    class StartGameListener implements ActionListener {
 
         private int x;
         private int y;
 
-        private StartGameListener(int x, int y) {
+        StartGameListener(int x, int y) {
             this.x = x;
             this.y = y;
         }
@@ -175,7 +221,7 @@ public class MineTable {
             Thread timerThread = new Thread(continuousTimer);
             timerThread.start();
             System.out.println("Timer initiated.");
-            
+
             //imports GameButton object clicked by player, adds GB class listeners to the object and activates left-click action for that button
             GameButton button = mineField[x][y];
             button.setType(FieldType.EMPTY);
@@ -185,7 +231,6 @@ public class MineTable {
             //click.actionPerformed(a);
 
             //Removes this listener from rest of the buttons as the game is already initiated, add listeners defined in GameButton class
-            int i = 1;
             for(GameButton[] buttonRow : mineField) {
                 for(GameButton everyOtherButton : buttonRow) {
                     if(everyOtherButton != button) {

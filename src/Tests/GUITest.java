@@ -10,8 +10,8 @@ public class GUITest {
     //static Window window = new Window();
     public static void main(String[] args) {
         GUITest test = new GUITest();
-        Window window = new Window();
-        window.makeWindow();
+        //Window window = new Window();
+        //window.makeWindow();
         /*
         JButton[][] mineField = window.getButtons();
        
