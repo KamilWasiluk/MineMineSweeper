@@ -2,7 +2,6 @@ package GUI;
 
 import javax.swing.*;
 import Fields.FieldType;
-import Tests.MineTableTest;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -24,17 +23,20 @@ public class Window {
     private JButton gameOverButton;
     private JPanel gameOverPanel;
     private boolean isGameOver = false;
-    private MineTableTest test;
+    private Initializer ini;
     private int[] size = new int[2];
 
-    public Window(MineTableTest test, int[] difficulty) {
-        this.test = test;
+    public Window(Initializer ini, int[] difficulty) {
+        this.ini = ini;
         this.width = difficulty[0];
         this.height = difficulty[1];
         this.minesQuantity = difficulty[2];
         if(difficulty[3]==440360){
             size[0] = 440;
             size[1] = 360;
+        }else if(difficulty[3]==660540){
+            size[0] = 660;
+            size[1] = 540;
         }else if(difficulty[3]==880720){
             size[0] = 880;
             size[1] = 720;
@@ -162,7 +164,7 @@ public class Window {
             isGameOver = true;
             gameOverFrame.dispose();
             mainFrame.dispose();
-            test.restart(test);
+            ini.askDifficulty();
         }
     }
 }

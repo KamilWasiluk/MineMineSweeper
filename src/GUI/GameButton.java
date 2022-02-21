@@ -2,7 +2,6 @@ package GUI;
 
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
-
 import Fields.FieldType;
 import java.awt.event.*;
 
@@ -169,6 +168,7 @@ public class GameButton extends JButton {
                 if(SwingUtilities.isRightMouseButton(e)) {
                     setFlag();
                     mineTable.minesQuantityHasChanged(true);
+                    mineTable.checkIfWon();
                     pressed = false;
                     
                 } 
